@@ -1,0 +1,74 @@
+CREATE DATABASE bookstore;
+
+USE bookstore;
+
+-- Users Table
+CREATE TABLE users (
+    user_id INT AUTO_INCREMENT PRIMARY KEY,
+    first_name VARCHAR(50),
+    last_name VARCHAR(50),
+    email VARCHAR(100) UNIQUE,
+    password VARCHAR(255),
+    address TEXT,
+    contact_number VARCHAR(15),
+    role ENUM('admin', 'user') DEFAULT 'user'
+);
+
+-- Categories Table
+CREATE TABLE categories (
+    category_id INT AUTO_INCREMENT PRIMARY KEY,
+    category_name VARCHAR(50)
+);
+
+-- Books Table
+CREATE TABLE books (
+    book_id INT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(100),
+    author VARCHAR(100),
+    category_id INT,
+    price DECIMAL(10, 2),
+    stock INT DEFAULT 0,
+    description TEXT,
+    image VARCHAR(255),
+    FOREIGN KEY (category_id) REFERENCES categories(category_id) ON DELETE CASCADE
+);
+
+-- Cart Table
+CREATE TABLE cart (
+    cart_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT,
+    book_id INT,
+    quantity INT,
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (book_id) REFERENCES books(book_id) ON DELETE CASCADE
+);
+
+-- Orders Table
+CREATE TABLE orders (
+    order_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT,
+    total_amount DECIMAL(10, 2),
+    order_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    status ENUM('pending', 'completed') DEFAULT 'pending',
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+);
+
+-- Order Items Table
+CREATE TABLE order_items (
+    order_item_id INT AUTO_INCREMENT PRIMARY KEY,
+    order_id INT,
+    book_id INT,
+    quantity INT,
+    price DECIMAL(10, 2),
+    FOREIGN KEY (order_id) REFERENCES orders(order_id) ON DELETE CASCADE,
+    FOREIGN KEY (book_id) REFERENCES books(book_id) ON DELETE CASCADE
+);
+
+-- Messages Table
+CREATE TABLE messages (
+    message_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT,
+    message TEXT,
+    date_sent DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+);
